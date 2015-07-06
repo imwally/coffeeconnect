@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+SUBMIT_URL=http://sbux-portal.appspot.com/submit
+APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep -o "apname.*"`
+
+echo "Connecting..."
+
+AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authenticated"`
+
+if [ $AUTHENTICATED = "sbux-portal-authenticated" ]; 
+then
+    echo "Successfully connected."
+else
+    echo "Connection failed."
+fi
