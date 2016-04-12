@@ -1,13 +1,28 @@
-#!/usr/bin/env sh
+#!/bin/sh
 
-SUBMIT_URL=http://sbux-portal.appspot.com/submit
+# Make sure we have a network connection.
+curl -s -o /dev/null http://www.google.com
+if [ $? -ne 0 ]
+then
+   echo "Can't resolve host."
+   exit
+fi
+
 APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep -o "apname.*"`
 
+# Already authenticated.
+if [ -n $APNAME ]
+then
+    echo "Connected."
+    exit
+fi
+
+# Attempt authentication.
+SUBMIT_URL=http://sbux-portal.appspot.com/submit
+AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authenticated"`
 echo "Connecting..."
 
-AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authenticated"`
-
-if [ $AUTHENTICATED = "sbux-portal-authenticated" ]; 
+if [ $AUTHENTICATED = "sbux-portal-authenticated" ]
 then
     echo "Successfully connected."
 else
