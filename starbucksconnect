@@ -11,16 +11,18 @@ fi
 APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep -o "apname.*"`
 
 # Already authenticated.
-if [ -n $APNAME ]
+if [ -z $APNAME ]
 then
     echo "Connected."
     exit
+else
+    echo "Connecting..."
 fi
 
 # Attempt authentication.
 SUBMIT_URL=http://sbux-portal.appspot.com/submit
 AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authenticated"`
-echo "Connecting..."
+
 
 if [ $AUTHENTICATED = "sbux-portal-authenticated" ]
 then
