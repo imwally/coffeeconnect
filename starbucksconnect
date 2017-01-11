@@ -5,7 +5,7 @@ curl -s -o /dev/null http://www.google.com
 if [ $? -ne 0 ]
 then
    echo "Can't resolve host."
-   exit
+   exit 1
 fi
 
 APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep -o "apname.*"`
@@ -14,7 +14,7 @@ APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep
 if [ -z $APNAME ]
 then
     echo "Connected."
-    exit
+    exit 0
 else
     echo "Connecting..."
 fi
@@ -27,6 +27,8 @@ AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authentica
 if [ $AUTHENTICATED = "sbux-portal-authenticated" ]
 then
     echo "Successfully connected."
+    exit 0
 else
     echo "Connection failed."
+    exit 1
 fi
