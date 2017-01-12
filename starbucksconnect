@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 # Make sure we have a network connection.
 curl -s -o /dev/null http://www.google.com
