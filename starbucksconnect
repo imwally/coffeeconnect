@@ -1,32 +1,53 @@
 #!/usr/bin/env sh
 
-# Make sure we have a network connection.
-curl -s -o /dev/null http://www.google.com
-if [ $? -ne 0 ]
+# Make sure we have a network connection
+if ! curl -s -o /dev/null http://www.duckduckgo.com
 then
-   echo "Can't resolve host."
+   echo "Can't resolve host. (Are you connected to the access point?)"
    exit 1
 fi
 
-APNAME=`curl -s -o /dev/null -w "%{redirect_url}\n" http://www.google.com | grep -o "apname.*"`
 
-# Already authenticated.
-if [ -z $APNAME ]
+# Already authenticated?
+BEGIN_URL=$(curl -s -o /dev/null -w "%{redirect_url}" http://www.duckduckgo.com)
+if [ "$BEGIN_URL" = "https://duckduckgo.com/" ]
 then
-    echo "Connected."
     exit 0
-else
-    echo "Connecting..."
 fi
 
-# Attempt authentication.
-SUBMIT_URL=http://sbux-portal.appspot.com/submit
-AUTHENTICATED=`curl -s -F $APNAME $SUBMIT_URL | grep -oh "sbux-portal-authenticated"`
+
+# Start authentication redirect rodeo
+CHECK_URL=$(echo "$BEGIN_URL" | sed -E "s/\\?cmd=login/check\\?cmd=login/g")
+SIGNUP_URL=$(curl -s /dev/null -w "%{redirect_url}" "$CHECK_URL")
 
 
-if [ $AUTHENTICATED = "sbux-portal-authenticated" ]
+# Initial login
+INITIAL_LOGIN=$(echo "$SIGNUP_URL" | grep -o "<title>Initial Login</title>")
+if [ -n "$INITIAL_LOGIN" ]
 then
-    echo "Successfully connected."
+    LOGIN_PAGE=$(curl -s -d fname="Kevin" \
+    		     	-d lname="Johnson" \
+		      	-d email="kevin.johnson@starbucks.com" \
+		      	-d postcode="98134" "$SIGNUP_URL")
+else
+    LOGIN_PAGE="$SIGNUP_URL"
+fi
+
+
+# Continue with initial or repeat login process
+LOGIN_USER=$(echo "$LOGIN_PAGE" | grep "user" | cut -d\" -f6)
+LOGIN_PASSWORD=$(echo "$LOGIN_PAGE" | grep "password" | cut -d\" -f6)
+LOGIN_URL="https://aruba.odyssys.net/cgi-bin/login"
+
+
+# Did we authenticate properly?
+AUTHENTICATED=$(curl -s -d cmd=authenticate \
+		       -d user="$LOGIN_USER" \
+		       -d password="$LOGIN_PASSWORD" \
+		       -d url="https://wifi.starbucks.com/" \
+		       $LOGIN_URL | grep -o "url=https://wifi.starbucks.com/")
+if [ -n "$AUTHENTICATED" ]
+then
     exit 0
 else
     echo "Connection failed."
