@@ -1,10 +1,9 @@
 # starbucksconnect
 
-_Update September 2 2018_: Now compatible with latest Google Starbucks WiFi.
-
 A shell script that will connect (authenticate) to Starbucks WiFi
 without requiring a browser.
 
+__Update September 2 2018__: Now compatible with latest Google Starbucks WiFi.
 
 ## Requirements
 
