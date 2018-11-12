@@ -31,7 +31,7 @@ SIGNUP_URL=$(curl -s -w "%{redirect_url}" "$CHECK_URL")
 #
 # Use random personal data generated with
 # https://www.fakenamegenerator.com
-if echo "$SIGNUP_URL" | grep -o "/signup?data="
+if echo "$SIGNUP_URL" | grep -q -o "/signup?data="
 then
     LOGIN_PAGE=$(curl -s -d fname="Mary" \
     		      -d lname="Brown" \
