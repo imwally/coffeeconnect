@@ -1,10 +1,18 @@
 #!/usr/bin/env sh
 
-# Make sure we have a network connection
-if ! curl -s -o /dev/null http://www.duckduckgo.com
+# Set flags
+if [ "$1" = "-v" ]
 then
-   echo "Can't resolve host. (Are you connected to the access point?)"
-   exit 1
+        FLAGS="-v"
+else
+        FLAGS=""
+fi
+
+# Make sure we have a network connection
+if ! curl $FLAGS -s -o /dev/null http://www.duckduckgo.com
+then
+        echo "Can't resolve host. (Are you connected to the access point?)"
+        exit 1
 fi
 
 
@@ -12,7 +20,7 @@ fi
 #
 # If redirected to https://duckduckgo.com from
 # http://www.duckduckgo.com we have already been authenticated.
-BEGIN_URL=$(curl -s -o /dev/null -w "%{redirect_url}" http://www.duckduckgo.com)
+BEGIN_URL=$(curl $FLAGS -s -o /dev/null -w "%{redirect_url}" http://www.duckduckgo.com)
 if [ "$BEGIN_URL" = "https://duckduckgo.com/" ]
 then
     exit 0
@@ -21,7 +29,7 @@ fi
 
 # Start authentication redirect rodeo
 CHECK_URL=$(echo "$BEGIN_URL" | sed -E "s/\\?cmd=login/check\\?cmd=login/g")
-SIGNUP_URL=$(curl -s -w "%{redirect_url}" "$CHECK_URL")
+SIGNUP_URL=$(curl $FLAGS -s -o /dev/null -w "%{redirect_url}" "$CHECK_URL")
 
 
 # Have we submitted login data before?
@@ -31,15 +39,15 @@ SIGNUP_URL=$(curl -s -w "%{redirect_url}" "$CHECK_URL")
 #
 # Use random personal data generated with
 # https://www.fakenamegenerator.com
-if echo "$SIGNUP_URL" | grep -q -o "/signup?data="
+if echo $SIGNUP_URL | grep -q -o "/signup?data="
 then
-    LOGIN_PAGE=$(curl -s -d fname="Mary" \
-    		      -d lname="Brown" \
-		      -d email="marywbrown@teleworm.us" \
-		      -d postcode="12401" "$SIGNUP_URL")
+    LOGIN_PAGE=$(curl $FLAGS -s --data-urlencode fname="Mary" \
+    		      --data-urlencode lname="HELLO" \
+		      --data-urlencode email="marywhello@teleworm.us" \
+		      --data-urlencode postcode="12401" "$SIGNUP_URL")
 # If so, we are already redirected to the login page.
 else
-    LOGIN_PAGE="$SIGNUP_URL"
+    LOGIN_PAGE=$(curl $FLAGS -c - -s "$CHECK_URL")
 fi
 
 
@@ -53,11 +61,13 @@ LOGIN_URL="https://aruba.odyssys.net/cgi-bin/login"
 
 # Submit device-specific generated credentials and check if we
 # authenticated properly.
-AUTHENTICATED=$(curl -s -d cmd=authenticate \
-		       -d user="$LOGIN_USER" \
-		       -d password="$LOGIN_PASSWORD" \
-		       -d url="https://wifi.starbucks.com/" \
-		       $LOGIN_URL | grep -o "url=https://wifi.starbucks.com/")
+AUTHENTICATED=$(curl $FLAGS -s --data-urlencode "cmd=authenticate" \
+		       --data-urlencode "user=$LOGIN_USER" \
+		       --data-urlencode "password=$LOGIN_PASSWORD" \
+		       --data-urlencode "url=https://wifi.starbucks.com/" \
+                       $LOGIN_URL)
+
+
 if [ -n "$AUTHENTICATED" ]
 then
     exit 0
