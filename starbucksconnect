@@ -47,7 +47,7 @@ then
 		      --data-urlencode postcode="12401" "$SIGNUP_URL")
 # If so, we are already redirected to the login page.
 else
-    LOGIN_PAGE=$(curl $FLAGS -c - -s "$CHECK_URL")
+    LOGIN_PAGE=$(curl $FLAGS -s "$CHECK_URL")
 fi
 
 
