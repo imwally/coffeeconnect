@@ -8,6 +8,7 @@ else
         FLAGS=""
 fi
 
+
 # Make sure we have a network connection
 if ! curl $FLAGS -s -o /dev/null http://www.duckduckgo.com
 then
@@ -66,6 +67,7 @@ AUTHENTICATED=$(curl $FLAGS -s --data-urlencode "cmd=authenticate" \
 		       --data-urlencode "password=$LOGIN_PASSWORD" \
 		       --data-urlencode "url=https://wifi.starbucks.com/" \
                        $LOGIN_URL)
+
 
 
 if [ -n "$AUTHENTICATED" ]
