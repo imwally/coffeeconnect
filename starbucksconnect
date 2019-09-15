@@ -42,10 +42,10 @@ SIGNUP_URL=$(curl $FLAGS -s -o /dev/null -w "%{redirect_url}" "$CHECK_URL")
 # https://www.fakenamegenerator.com
 if echo $SIGNUP_URL | grep -q -o "/signup?data="
 then
-    LOGIN_PAGE=$(curl $FLAGS -s --data-urlencode fname="Mary" \
-    		      --data-urlencode lname="HELLO" \
-		      --data-urlencode email="marywhello@teleworm.us" \
-		      --data-urlencode postcode="12401" "$SIGNUP_URL")
+    LOGIN_PAGE=$(curl $FLAGS -s --data-urlencode fname="Mattie" \
+		      --data-urlencode lname="Parker" \
+		      --data-urlencode email="MattieRParker@jourrapide.com" \
+		      --data-urlencode postcode="20036" "$SIGNUP_URL")
 # If so, we are already redirected to the login page.
 else
     LOGIN_PAGE=$(curl $FLAGS -s "$CHECK_URL")
@@ -67,7 +67,6 @@ AUTHENTICATED=$(curl $FLAGS -s --data-urlencode "cmd=authenticate" \
 		       --data-urlencode "password=$LOGIN_PASSWORD" \
 		       --data-urlencode "url=https://wifi.starbucks.com/" \
                        $LOGIN_URL)
-
 
 
 if [ -n "$AUTHENTICATED" ]
