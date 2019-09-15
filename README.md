@@ -1,4 +1,4 @@
-# starbucksconnect
+# coffeeconnect
 
 A shell script that will connect (authenticate) to Starbucks WiFi
 without requiring a browser.
