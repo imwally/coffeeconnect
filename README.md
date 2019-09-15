@@ -11,6 +11,8 @@ __Update September 2 2018__: Now compatible with latest Google Starbucks WiFi.
 
 ## Why?
 
+__Captive portals are annoying.__
+
 Connecting to the wireless network at Starbucks requires you to open a
 web browser and click the big green "Accept & Connect" button.  The
 problem is that if you're running a web browser with privacy minded
