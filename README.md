@@ -23,6 +23,12 @@ disable HTTPS Everywhere, try again, click the green button, and then
 re-enable the add-on.  But that's too much work. And what if you
 forget to re-enable HTTPS Everywhere?  Not cool dude.
 
+### Disable Captive Portal
+
+#### macOS
+
+`defaults write /Library/Preferences/SystemConfiguration/com.apple.captive.control Active -bool false`
+
 ## MAC Address Parameter
 
 __Update September 2 2018__: _The following is no longer the case with
