@@ -10,7 +10,7 @@ fi
 
 
 # Make sure we have a network connection
-if ! curl $FLAGS -s -o /dev/null http://www.duckduckgo.com
+if ! curl $FLAGS -s --insecure -o /dev/null http://www.duckduckgo.com
 then
         echo "Can't resolve host. (Are you connected to the access point?)"
         exit 1
@@ -21,7 +21,7 @@ fi
 #
 # If redirected to https://duckduckgo.com from
 # http://www.duckduckgo.com we have already been authenticated.
-BEGIN_URL=$(curl $FLAGS -s -o /dev/null -w "%{redirect_url}" http://www.duckduckgo.com)
+BEGIN_URL=$(curl $FLAGS -L --insecure -s -o /dev/null -w "%{url_effective}" http://www.duckduckgo.com)
 if [ "$BEGIN_URL" = "https://duckduckgo.com/" ]
 then
     exit 0
@@ -29,8 +29,8 @@ fi
 
 
 # Start authentication redirect rodeo
-CHECK_URL=$(echo "$BEGIN_URL" | sed -E "s/\\?cmd=login/check\\?cmd=login/g")
-SIGNUP_URL=$(curl $FLAGS -s -o /dev/null -w "%{redirect_url}" "$CHECK_URL")
+CHECK_URL=$(echo "$BEGIN_URL" | sed -E "s/\\?login_url/check\\?login_url/g")
+SIGNUP_URL=$(curl $FLAGS --insecure -s -o /dev/null -w "%{url_effective}" "$CHECK_URL")
 
 
 # Have we submitted login data before?
@@ -55,7 +55,7 @@ fi
 # Continue with initial or repeat login process by scraping the
 # device-specific generated user name and password values from the
 # hidden login form.
-LOGIN_USER=$(echo "$LOGIN_PAGE" | grep "user" | cut -d\" -f6)
+LOGIN_USER=$(echo "$LOGIN_PAGE" | grep "username" | cut -d\" -f6)
 LOGIN_PASSWORD=$(echo "$LOGIN_PAGE" | grep "password" | cut -d\" -f6)
 LOGIN_URL="https://aruba.odyssys.net/cgi-bin/login"
 
